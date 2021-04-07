@@ -85,10 +85,12 @@ function draw() {
     if (highscore<score){
       highscore=score;
     }
-    if((keyDown("space")||touches.length>0) && trex.y >= height/1.35) {
-      trex.velocityY = -12.5;
-      touches.length=0;
-    }
+    if (trex.y >= height/1.35) {
+      if(keyDown("space")||touches.length>0) {
+        trex.velocityY = -12.5;
+        touches.length=0;
+      }
+    }  
   
     trex.velocityY = trex.velocityY + 0.8;
   
