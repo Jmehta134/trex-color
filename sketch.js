@@ -74,18 +74,20 @@ function draw() {
   background(0);
   fill(255);
   textSize(20);
-  text("Score : "+ score, width-120,height/5);
-  text("Highscore : "+ highscore, width-270,height/5);
-  
+  text("Score : "+ score, width-150,height/5);
+  text("Highscore : "+ highscore, width-340,height/5);
   trex.depth=ground.depth+1;
+  
+  
   if (gameState===PLAY){
     score = score + Math.round(getFrameRate()/60);
     ground.velocityX = -(6 + 3*score/100);
     if (highscore<score){
       highscore=score;
     }
-    if(keyDown("space") && trex.y >= height/1.35) {
+    if(keyDown("space")||touches.length>0 && trex.y >= height/1.35) {
       trex.velocityY = -12.5;
+      touches.length=0;
     }
   
     trex.velocityY = trex.velocityY + 0.8;
@@ -119,8 +121,9 @@ function draw() {
     obstaclesGroup.setLifetimeEach(-1);
     cloudsGroup.setLifetimeEach(-1);
     
-    if(mousePressedOver(restart)) {
+    if(mousePressedOver(restart)||touches.length>0) {
       reset();
+      touches.length=0;
     }
   }
   
