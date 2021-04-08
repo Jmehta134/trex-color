@@ -76,8 +76,8 @@ function draw() {
   background(0);
   fill(255);
   textSize(40);
-  text("Score : "+ score, width-200,height/5);
-  text("Highscore : "+ highscore, width-500,height/5);
+  text("Score: "+ score, width-300,height/5);
+  text("HI: "+ highscore, width-500,height/5);
   trex.depth=ground.depth+1;
   
   
