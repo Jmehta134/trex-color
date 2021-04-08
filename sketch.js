@@ -33,6 +33,9 @@ function preload(){
   
   gameOverImg = loadImage("gameOver.png");
   restartImg = loadImage("restart.png");
+
+  tini=loadSound("100.mp3");
+  jump=loadSound("trex jump.mp3");
 }
 
 function setup() {
@@ -42,9 +45,8 @@ function setup() {
   
   trex.addAnimation("running", trex_running);
   trex.addAnimation("collided", trex_collided);
-  trex.scale = 0.5;
   
-  ground = createSprite(height,height-height/5,400,20);
+  ground = createSprite(width/2,height/1.3+30,400,20);
   ground.addImage("ground",groundImage);
   ground.x = ground.width /2;
   
@@ -54,13 +56,13 @@ function setup() {
   restart = createSprite(width/2,height/2+width/20);
   restart.addImage(restartImg);
   
-  gameOver.scale = 0.7;
-  restart.scale = 0.6;
+  gameOver.scale = 1.4;
+  restart.scale = 1.2;
 
   gameOver.visible = false;
   restart.visible = false;
   
-  invisibleGround = createSprite(width/12,height/1.3+30,400,10);
+  invisibleGround = createSprite(width/12,height/1.3+50,400,10);
   invisibleGround.visible = false;
   
   cloudsGroup = new Group();
@@ -73,26 +75,24 @@ function draw() {
   //trex.debug = true;
   background(0);
   fill(255);
-  textSize(20);
-  text("Score : "+ score, width-150,height/5);
-  text("Highscore : "+ highscore, width-340,height/5);
+  textSize(40);
+  text("Score : "+ score, width-200,height/5);
+  text("Highscore : "+ highscore, width-500,height/5);
   trex.depth=ground.depth+1;
   
   
   if (gameState===PLAY){
     score = score + Math.round(getFrameRate()/60);
-    ground.velocityX = -(6 + 3*score/100);
     if (highscore<score){
       highscore=score;
     }
-    if (trex.y >= height/1.35) {
-      if(keyDown("space")||touches.length>0) {
-        trex.velocityY = -12.5;
-        touches.length=0;
-      }
-    }  
+    if ((keyDown("space")||touches.length>0)&&trex.y >= height/1.3-10) {
+      trex.velocityY = -20;
+      touches.length=0;
+      jump.play();
+    }
   
-    trex.velocityY = trex.velocityY + 0.8;
+    trex.velocityY = trex.velocityY + 1;
   
     if (ground.x < 0){
       ground.x = ground.width/2;
@@ -101,9 +101,16 @@ function draw() {
     trex.collide(invisibleGround);
     spawnClouds();
     spawnObstacles();
-  
+    var vY=-10;
+    if (frameCount%20===0 && vY>=-20){
+      vY=vY+0.1;
+    }
+    ground.velocityX = vY;
     if(obstaclesGroup.isTouching(trex)){
         gameState = END;
+    }
+    if (score>0 && score%100===0) {
+      tini.play();
     }
   }
   else if (gameState === END) {
@@ -139,11 +146,10 @@ function spawnClouds() {
     var cloud = createSprite(width,120,40,10);
     cloud.y = Math.round(random(height/4,height/2+height/10));
     cloud.addImage(cloudImage);
-    cloud.scale = 0.5;
     cloud.velocityX = -3;
     
      //assign lifetime to the variable
-    cloud.lifetime = 200;
+    cloud.lifetime = 500;
     
     //adjust the depth
     cloud.depth = trex.depth;
@@ -180,7 +186,6 @@ function spawnObstacles() {
     }
     
     //assign scale and lifetime to the obstacle           
-    obstacle.scale = 0.5;
     obstacle.lifetime = 300;
     //add each obstacle to the group
     obstaclesGroup.add(obstacle);
